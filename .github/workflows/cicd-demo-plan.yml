@@ -61,6 +61,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
+          const { context, github } = require('@actions/github');
           const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ steps.plan.outputs.plan_output }}\n\`\`\``;
           const status = `Terraform Plan Status: ${{ steps.set_output.outputs.plan_status }}`;
           await github.rest.issues.createComment({
