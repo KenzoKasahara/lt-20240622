@@ -39,7 +39,7 @@ jobs:
       id: plan
       working-directory: terraform
       run: |
-        terraform plan -no-color > plan.txt
+        terraform plan -no-color >> plan.txt
         echo "plan_output=$(cat plan.txt)" >> $GITHUB_ENV
       continue-on-error: true
 
