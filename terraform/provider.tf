@@ -10,9 +10,11 @@ terraform {
     bucket  = "s3-lightning-talk-20240622"
     key     = "state/s3-lightning-talk-20240622.tfstate"
     region  = "ap-northeast-1"
+    profile = "inspector_terraform_switch_role"
   }
 }
 
 provider "aws" {
   region  = "ap-northeast-1"
+  profile = "inspector_terraform_switch_role"
 }
