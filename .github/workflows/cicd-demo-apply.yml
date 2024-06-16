@@ -1,4 +1,4 @@
-name: CICD Demo(terraform plan)
+name: CICD Demo(terraform apply)
 
 on:
   pull_request:
@@ -12,7 +12,7 @@ env:
 permissions: write-all
 
 jobs:
-  terraform-plan:
+  terraform-apply:
     runs-on: ubuntu-latest
 
     if: github.event.pull_request.merged == true
@@ -53,9 +53,9 @@ jobs:
         script: |
           const fs = require('fs');
           const applyResult = fs.readFileSync('./terraform/apply.txt');
-          const applyOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${applyResult}\n\`\`\``;
+          const applyOutput = `## Terraform Apply Output\n\n\`\`\`terraform\n${applyResult}\n\`\`\``;
           await github.rest.issues.createComment({
             ...context.repo,
             issue_number: context.issue.number,
-            body: `Terraform Plan Result:\n\n${applyOutput}`
+            body: `Terraform Apply Result:\n\n${applyOutput}`
           });
