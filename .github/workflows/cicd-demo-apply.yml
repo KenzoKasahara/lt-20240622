@@ -37,7 +37,7 @@ jobs:
       working-directory: terraform
       run: terraform init
 
-    - name: Terraform Plan
+    - name: Terraform Apply
       id: apply
       working-directory: terraform
       run: |
@@ -46,13 +46,13 @@ jobs:
         echo "APPLY_RESULT=$(cat apply.txt)" >> $GITHUB_ENV
       continue-on-error: true
 
-    - name: 'Post Plan to PR'
+    - name: 'Post Apply to PR'
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const fs = require('fs');
-          const applyResult = fs.readFileSync('./terraform/apply.txt', 'utf8');
+          const applyResult = fs.readFileSync('./terraform/apply.txt');
           const applyOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${applyResult}\n\`\`\``;
           await github.rest.issues.createComment({
             ...context.repo,
