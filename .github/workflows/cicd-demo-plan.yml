@@ -55,5 +55,5 @@ jobs:
           await github.rest.issues.createComment({
             ...context.repo,
             issue_number: context.issue.number,
-            body: `Terraform Plan Result:\n\n${formattedResult}`
+            body: `Terraform Plan Result:\n\n${planOutput}`
           });
