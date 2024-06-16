@@ -49,9 +49,11 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.PLAN_RESULT }}\n\`\`\``;
+          const fs = require('fs');
+          const planResult = fs.readFileSync('./terraform/plan.txt', 'utf8');
+          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${planResult}\n\`\`\``;
           await github.rest.issues.createComment({
             ...context.repo,
             issue_number: context.issue.number,
-            body: `Terraform Plan Result:\n\n${planOutput}`
+            body: `Terraform Plan Result:\n\n${formattedResult}`
           });
