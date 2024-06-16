@@ -38,22 +38,22 @@ jobs:
     - name: Terraform Plan
       id: plan
       working-directory: terraform
-      run: terraform plan
+      run: |
+        terraform plan -no-color
       continue-on-error: true
 
-    - name: variables
-      run: |
-        echo plan_output: ${{ env.plan_output }}
+    - name: Capture plan output
+      id: capture-output
+      run: echo "plan-result=$(terraform plan -no-color)"
 
     - name: 'Post Plan to PR'
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ steps.plan.outputs }}\n\`\`\``;
+          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ steps.capture-output.outputs.plan-result }}\n\`\`\``;
           await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
+            ...context.repo,
             issue_number: context.issue.number,
-            body: `${planOutput}`
+            body: `Terraform Plan Result:\n\n${planOutput}`
           });
