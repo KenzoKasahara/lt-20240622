@@ -45,7 +45,8 @@ jobs:
       id: set_output
       working-directory: terraform
       run: |
-        if echo "$(cat plan.txt)" | grep -q "No changes."; then
+        echo "plan_output=$(cat plan.txt)" >> $GITHUB_ENV
+        if echo "${plan_output}" | grep -q "No changes."; then
           echo "No changes detected."
           echo "plan_status=no_changes" >> $GITHUB_ENV
         else
