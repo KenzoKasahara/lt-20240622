@@ -39,7 +39,7 @@ jobs:
       id: plan
       working-directory: terraform
       run: |
-        terraform plan -no-color >> plan.txt
+        terraform plan -no-color > plan.txt
         echo "plan_output=$(cat plan.txt)" >> $GITHUB_ENV
       continue-on-error: true
 
@@ -61,8 +61,8 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n$plan_output\n\`\`\``;
-          const status = `Terraform Plan Status: $plan_status`;
+          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ steps.plan.outputs.plan_output }}\n\`\`\``;
+          const status = `Terraform Plan Status: ${{ steps.set_output.outputs.plan_status }}`;
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
