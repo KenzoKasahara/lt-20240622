@@ -55,26 +55,17 @@ jobs:
           echo "plan_status=changes"
         fi
         echo "plan_status=$plan_status" >> $GITHUB_ENV
-        echo "plan_output: ${{ env.plan_output }}"
-        echo "plan_status: $plan_status"
 
-  comment:
-    name: 'Comment Terraform Plan Output'
-    runs-on: ubuntu-latest
-    needs: terraform-plan
-
-    steps:
-      - name: 'Post Plan to PR'
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
-            const status = `Terraform Plan Status: ${{ env.plan_status }}`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body: `${status}\n\n${planOutput}`
-            });
+    - name: 'Post Plan to PR'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
+          const status = `Terraform Plan Status: ${{ env.plan_status }}`;
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: `${status}\n\n${planOutput}`
+          });
