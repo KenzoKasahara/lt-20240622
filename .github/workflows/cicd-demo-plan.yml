@@ -38,13 +38,13 @@ jobs:
     - name: Terraform Plan
       id: plan
       working-directory: terraform
-      run: terraform plan -no-color.
+      run: terraform plan --no-color.
       continue-on-error: true
 
     - name: 'Set output'
       id: set_output
       working-directory: terraform
-      run: echo "plan_output=$(terraform plan -no-color)" >> $GITHUB_ENV
+      run: echo "plan_output=$(terraform plan --no-color)" >> $GITHUB_ENV
 
   comment:
     name: 'Comment Terraform Plan Output'
