@@ -38,21 +38,25 @@ jobs:
     - name: Terraform Plan
       id: plan
       working-directory: terraform
-      run: terraform plan -no-color > plan.txt
+      run: |
+        terraform plan -no-color > plan.txt
+        echo "plan_output=$(cat plan.txt)" >> $GITHUB_ENV
       continue-on-error: true
 
     - name: 'Set output'
       id: set_output
       working-directory: terraform
       run: |
-        echo "plan_output=$(cat plan.txt)" >> $GITHUB_ENV
-        if echo "${plan_output}" | grep -q "No changes."; then
+        if echo "${{ env.plan_output }}" | grep -q "No changes."; then
           echo "No changes detected."
-          echo "plan_status=no_changes" >> $GITHUB_ENV
+          echo "plan_status=no_changes"
         else
           echo "Changes detected."
-          echo "plan_status=changes" >> $GITHUB_ENV
+          echo "plan_status=changes"
         fi
+        echo "plan_status=$plan_status" >> $GITHUB_ENV
+        echo "plan_output: ${{ env.plan_output }}"
+        echo "plan_status: $plan_status"
 
   comment:
     name: 'Comment Terraform Plan Output'
