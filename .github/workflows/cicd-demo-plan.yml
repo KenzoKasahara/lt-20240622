@@ -38,13 +38,22 @@ jobs:
     - name: Terraform Plan
       id: plan
       working-directory: terraform
-      run: terraform plan -no-color
+      run: terraform plan -no-color > plan.txt
       continue-on-error: true
 
     - name: 'Set output'
       id: set_output
       working-directory: terraform
-      run: echo "plan_output=$(terraform plan -no-color)" >> $GITHUB_ENV
+      run: |
+        PLAN_OUTPUT=$(cat plan.txt)
+        echo "plan_output=${PLAN_OUTPUT}" >> $GITHUB_ENV
+        if echo "${PLAN_OUTPUT}" | grep -q "No changes."; then
+          echo "No changes detected."
+          echo "plan_status=no_changes" >> $GITHUB_ENV
+        else
+          echo "Changes detected."
+          echo "plan_status=changes" >> $GITHUB_ENV
+        fi
 
   comment:
     name: 'Comment Terraform Plan Output'
@@ -59,10 +68,11 @@ jobs:
           script: |
             const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
             const { context, github } = require('@actions/github');
+            const status = `Terraform Plan Status: ${{ env.plan_status }}`;
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number: context.issue.number,
-              body: planOutput
+              body: `${status}\n\n${planOutput}`
             });
         env:
           PLAN_OUTPUT: ${{ env.plan_output }}
