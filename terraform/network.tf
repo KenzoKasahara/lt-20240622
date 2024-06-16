@@ -72,3 +72,13 @@ resource "aws_security_group_rule" "demo_lt_public_sg_in_http" {
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.demo_lt_public_sg.id
 }
+
+# インバウンド(受け入れる)ルール
+resource "aws_security_group_rule" "demo_lt_public_sg_in_http" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.demo_lt_public_sg.id
+}
