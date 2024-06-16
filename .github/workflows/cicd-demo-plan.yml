@@ -1,0 +1,69 @@
+name: CICD Demo(terraform plan)
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_ASSUME_ROLE: ${{ secrets.ASSUMEROLE_20240622 }}
+
+permissions: write-all
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.5.0
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: terraform init
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: ap-northeast-1
+        role-to-assume: ${{ env.AWS_ASSUME_ROLE }}
+        role-session-name: GitHubActions
+        role-duration-seconds: 1200
+
+    - name: Terraform Plan
+      id: plan
+      working-directory: terraform
+      run: terraform plan -no-color.
+      continue-on-error: true
+
+    - name: 'Set output'
+      id: set_output
+      working-directory: terraform
+      run: echo "plan_output=$(terraform plan -no-color)" >> $GITHUB_ENV
+
+  comment:
+    name: 'Comment Terraform Plan Output'
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+
+    steps:
+      - name: 'Post Plan to PR'
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
+            const { context, github } = require('@actions/github');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: planOutput
+            });
+        env:
+          PLAN_OUTPUT: ${{ env.plan_output }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
