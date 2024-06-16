@@ -63,8 +63,8 @@ jobs:
         if: always()
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { context, github } = require('@actions/github');
             const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
             const status = `Terraform Plan Status: ${{ env.plan_status }}`;
             await github.rest.issues.createComment({
@@ -73,6 +73,3 @@ jobs:
               issue_number: context.issue.number,
               body: `${status}\n\n${planOutput}`
             });
-        env:
-          PLAN_OUTPUT: ${{ env.plan_output }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
