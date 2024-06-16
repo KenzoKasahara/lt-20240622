@@ -56,17 +56,22 @@ jobs:
         fi
         echo "plan_status=${plan_status}" >> $GITHUB_ENV
 
-    - name: 'Post Plan to PR'
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const { context, github } = require('@actions/github');
-          const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ steps.plan.outputs.plan_output }}\n\`\`\``;
-          const status = `Terraform Plan Status: ${{ steps.set_output.outputs.plan_status }}`;
-          await github.rest.issues.createComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-            body: `${status}\n\n${planOutput}`
-          });
+    - name: variables
+      run: |
+        echo plan_output: ${{ env.plan_output }}
+        echo plan_status: ${{ env.plan_status }}
+
+    # - name: 'Post Plan to PR'
+    #   uses: actions/github-script@v7
+    #   with:
+    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    #     script: |
+    #       const { context, github } = require('@actions/github');
+    #       const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
+    #       const status = `Terraform Plan Status: ${{ env.plan_status }}`;
+    #       await github.rest.issues.createComment({
+    #         owner: context.repo.owner,
+    #         repo: context.repo.repo,
+    #         issue_number: context.issue.number,
+    #         body: `${status}\n\n${planOutput}`
+    #       });
