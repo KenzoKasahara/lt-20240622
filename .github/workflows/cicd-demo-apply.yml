@@ -44,7 +44,6 @@ jobs:
         terraform apply -no-color -auto-approve > apply.txt
         cat apply.txt
         echo "APPLY_RESULT=$(cat apply.txt)" >> $GITHUB_ENV
-      continue-on-error: true
 
     - name: 'Post Apply to PR'
       uses: actions/github-script@v7
