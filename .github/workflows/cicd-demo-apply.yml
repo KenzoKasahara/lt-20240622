@@ -41,7 +41,7 @@ jobs:
       id: apply
       working-directory: terraform
       run: |
-        terraform apply -auto-approve > apply.txt
+        terraform apply -no-color -auto-approve > apply.txt
         cat apply.txt
         echo "APPLY_RESULT=$(cat apply.txt)" >> $GITHUB_ENV
       continue-on-error: true
@@ -52,7 +52,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const fs = require('fs');
-          const applyResult = fs.readFileSync('./terraform/apply.txt');
+          const applyResult = fs.readFileSync('./terraform/apply.txt', 'utf8');
           const applyOutput = `## Terraform Apply Output\n\n\`\`\`terraform\n${applyResult}\n\`\`\``;
           await github.rest.issues.createComment({
             ...context.repo,
