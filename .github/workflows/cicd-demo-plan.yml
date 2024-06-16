@@ -65,10 +65,11 @@ jobs:
         with:
           script: |
             const planOutput = `## Terraform Plan Output\n\n\`\`\`terraform\n${{ env.plan_output }}\n\`\`\``;
-            let { context, github } = require('@actions/github');
+            const { context, github } = require('@actions/github');
             const status = `Terraform Plan Status: ${{ env.plan_status }}`;
             await github.rest.issues.createComment({
-              ...context.repo,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
               issue_number: context.issue.number,
               body: `${status}\n\n${planOutput}`
             });
