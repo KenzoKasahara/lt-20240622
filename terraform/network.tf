@@ -74,7 +74,7 @@ resource "aws_security_group_rule" "demo_lt_public_sg_in_http" {
 }
 
 # インバウンド(受け入れる)ルール
-resource "aws_security_group_rule" "demo_lt_public_sg_in_http" {
+resource "aws_security_group_rule" "demo_lt_public_sg_in_https" {
   type              = "ingress"
   from_port         = 443
   to_port           = 443
